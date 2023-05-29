@@ -1,5 +1,5 @@
 #Raw data set
-AE-polymer-data
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
