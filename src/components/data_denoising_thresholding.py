@@ -36,52 +36,45 @@ def dataDenoising(rawDataNdar):
 
 
 def readAndProcessDataForDenoising(directoryPath):
-    print(directoryPath)
-    print(os.getcwd())
-directoryPath = os.getcwd()+'/data/polymer-ae/raw/'
-readAndProcessDataForDenoising(directoryPath)
-
-for root, dirs, files in os.walk(directoryPath):
+    for root, dirs, files in os.walk(directoryPath):
         for rowDirName in dirs:
-         print(rowDirName)
-         txtFiles = glob.glob(root+rowDirName+'/*.txt')
-         for file in txtFiles:
-            print(txtFiles)
+            #print(rowDirName)
+            txtFiles = glob.glob(root+rowDirName+'/*.txt')
+            for file in txtFiles:
+                print(txtFiles)
                 #rawDataDf = pd.read_csv(file)
                 #rawDataDf = rawDataDf['AE_data'].values
-            rawDataDf = np.loadtxt(file)
-            denoisedDataArr = dataDenoising(rawDataDf)
+                rawDataDf = np.loadtxt(file)
+                denoisedDataArr = dataDenoising(rawDataDf)
                 #denoisedDataDf = pd.DataFrame(denoisedDataArr , columns = ['AE_data'])
-            fileName = file.replace(root+rowDirName+'/','')
+                fileName = file.replace(root+rowDirName+'/','')
                 
                 #assign file name t coulmn name
                 #speed = fileName[0:2]
                 #load = fileName[5:6]
                 #denoisedData.insert(1, 'load', load)
                 #denoisedData.insert(2, 'speed', speed)
-         """""
+         
                 
-            aeExpDir = Path(root).parent
+                aeExpDir = Path(root).parent
 
                 #check denoised directory exist or not
-            if ((aeExpDir/'denoised').exists()):
-                denoisedDir = str(aeExpDir/'denoised')
-
-                
+                if ((aeExpDir/'denoised').exists()):
+                    denoisedDir = str(aeExpDir/'denoised')
                     
                     #check internalforlder exist or not
                     if (Path(aeExpDir/'denoised'/rowDirName).exists()):
-                        #denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName + '.csv'
+                           #denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName + '.csv'
                         denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName
-                        #denoisedDataDf.to_csv(denoisedFile, index=False)
+                           #denoisedDataDf.to_csv(denoisedFile, index=False)
                         np.savetxt(denoisedFile,denoisedDataArr, delimiter=",")
                     else:
                         mode = 0o777
                         path = os.path.join(denoisedDir, rowDirName)
                         os.mkdir(path, mode)        
                         print(rowDirName + ' Directory is created')
-                        #Save the denoised data to a new CSV file
-                        #denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName + '.csv'
+                          #Save the denoised data to a new CSV file
+                          #denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName + '.csv'
                         denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName
                         #denoisedDataDf.to_csv(denoisedFile, index=False)
                         np.savetxt(denoisedFile, denoisedDataArr, delimiter=",")
@@ -115,7 +108,8 @@ for root, dirs, files in os.walk(directoryPath):
                         denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName
                         #denoisedDataDf.to_csv(denoisedFile, index=False)
                         np.savetxt(denoisedFile, denoisedDataArr, delimiter=",")
-                        
+        
     return
-"""
 
+directoryPath = os.getcwd()+'/data/polymer-ae/raw/'
+readAndProcessDataForDenoising(directoryPath)
