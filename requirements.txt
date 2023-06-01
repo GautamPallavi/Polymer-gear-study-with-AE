@@ -4,4 +4,5 @@ seaborn
 pywavelets==1.4.1
 scikit-learn
 scip
+matplotlib
 #-e .
