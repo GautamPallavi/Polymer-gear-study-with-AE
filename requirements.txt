@@ -1,4 +1,7 @@
 pandas
 numpy
 seaborn
--e .
+pywavelets==1.4.1
+scikit-learn
+scip
+#-e .
