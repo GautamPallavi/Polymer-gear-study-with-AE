@@ -1,34 +1,32 @@
 import pandas as pd
 import numpy as np
 import os
-import pywavelets
+import pywt
 import glob
 from pathlib import Path
 from scipy.signal import find_peaks
 from scipy.stats import skew, kurtosis, entropy
 import csv
 from src.exception import CustomException
-from logger import logging
+# Import writer class from csv module
+from csv import writer
+import csv
+#from logger import logging
 
 
 
 def thresholding(denoisedDataArr):
-    # set threshold to 10% of the maximum amplitude
-    #threshold = 0.2 * np.max(denoisedDataArr)
-    # Or
-    # Apply adaptive thresholding using Otsu's method
     threshold = np.mean(denoisedDataArr) + 2.5 * np.std(denoisedDataArr)
 
-    logging.info("denoised data is passed to data threshold function")
+    #logging.info("denoised data is passed to data threshold function")
 
     thresholdedDataArr = np.where(denoisedDataArr > threshold, denoisedDataArr, 0)
 
-    peakIndices, peakProperties = find_peaks(thresholdedDataArr, distance = 4000)
+    ##peakIndices, peakProperties = find_peaks(thresholdedDataArr, distance = 4000)
     return threshold, thresholdedDataArr
 
-directoryPath = os.getcwd()+'/data/denoised/'
 
-def readAndProcessDataForThresolding(directoryPath, plotGraph):
+def readAndProcessDataForThresolding(directoryPath):
     for root, dirs, files in os.walk(directoryPath):
         for denoisedDirName in dirs:
             txtFiles = glob.glob(root+denoisedDirName+'/*.txt')
@@ -66,7 +64,7 @@ def readAndProcessDataForThresolding(directoryPath, plotGraph):
                     
                     os.mkdir(path, mode)
                     denoisedDir = str(aeExpDir/'thresholded')
-                    print('"denoised" directory is created')
+                    print('"thresholded" directory is created')
                     
                     #check
                     if (Path(aeExpDir/'thresholded'/denoisedDirName).exists()):
@@ -85,6 +83,50 @@ def readAndProcessDataForThresolding(directoryPath, plotGraph):
                         thresholdedFile = denoisedDir + "/" + denoisedDirName + "/" + fileName
                         #thresholdedDataDf.to_csv(denoisedFile, index=False)
                         np.savetxt(thresholdedFile,thresholdedDataArr, delimiter=",")
+
+
+                #--- Save threshold values in new file in feature folder ----------
+                featureDir = str(aeExpDir/'feature')
+                thresholdFeatureFile = featureDir + "/" + 'thresold.csv'
+                thresholdArrToSave = [fileName, threshold]                    
+                thresholValuWithFileName = np.array([thresholdArrToSave])
+                
+
+
+                # check if denoised directory exist or not
+                if ((aeExpDir/'feature').exists()):
+                    #check threshold file exist or not
+                    if (Path(thresholdFeatureFile).exists()):
+                        #--- Append values
+                        with open(thresholdFeatureFile, 'a') as csv_file:
+                            dict_object = csv.writer(csv_file, delimiter=',')
+                            dict_object.writerow(thresholdArrToSave)
+                            csv_file.close()
+                    else:
+                        np.savetxt(thresholdFeatureFile,thresholValuWithFileName, delimiter=",", fmt='%s')
+
+                else:
+                    mode = 0o777
+  
+                    # Path
+                    path = os.path.join(aeExpDir, 'feature')
+                    
+                    os.mkdir(path, mode)
+                    featureDir = str(aeExpDir/'feature')
+                    print('"Feature" directory is created')
+                    
+                    
+                    #check threshold file exist or not
+                    if (Path(thresholdFeatureFile).exists()):
+                        #--- Append values
+                        with open(thresholdFeatureFile, 'a') as csv_file:
+                            dict_object = csv.writer(csv_file, delimiter=',')
+                            dict_object.writerow(thresholdArrToSave)
+                            csv_file.close()
+                    else:
+                        np.savetxt(thresholdFeatureFile,thresholValuWithFileName, delimiter=",", fmt='%s')
+
+directoryPath = os.getcwd()+'/data/polymer-ae/denoised/'
+readAndProcessDataForThresolding(directoryPath)
     
-    return threshold
 

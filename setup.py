@@ -24,5 +24,4 @@ author= 'Pallavi',
 author_email='pallavigautam1405@gmail.com',
 packages=find_packages(),
 install_requires=get_requirements('requirements.txt')
-
-)
+) 

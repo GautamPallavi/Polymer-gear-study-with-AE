@@ -1,9 +1,11 @@
 #Raw data set
 data/
 
+.DS_Store
+
 # env folder
-mvenv/
-mvenv/bin
+venv/
+venv/bin
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
