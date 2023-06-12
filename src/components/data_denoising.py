@@ -38,17 +38,16 @@ def dataDenoising(rawDataNdar):
 def readAndProcessDataForDenoising(directoryPath):
     for root, dirs, files in os.walk(directoryPath):
         for rowDirName in dirs:
-            #print(rowDirName)
+            print('Denoising files in ' +rowDirName+ ' directory')
             txtFiles = glob.glob(root+rowDirName+'/*.txt')
             for file in txtFiles:
-                print(txtFiles)
                 #rawDataDf = pd.read_csv(file)
                 #rawDataDf = rawDataDf['AE_data'].values
                 rawDataDf = np.loadtxt(file)
                 denoisedDataArr = dataDenoising(rawDataDf)
                 #denoisedDataDf = pd.DataFrame(denoisedDataArr , columns = ['AE_data'])
                 fileName = file.replace(root+rowDirName+'/','')
-                
+                print('Denoising ' + fileName + ' file data')
                 #assign file name t coulmn name
                 #speed = fileName[0:2]
                 #load = fileName[5:6]
@@ -108,7 +107,7 @@ def readAndProcessDataForDenoising(directoryPath):
                         denoisedFile = denoisedDir + "/" + rowDirName + "/" + fileName
                         #denoisedDataDf.to_csv(denoisedFile, index=False)
                         np.savetxt(denoisedFile, denoisedDataArr, delimiter=",")
-        
+    print('Denoising completed!')
     return
 
 directoryPath = os.getcwd()+'/data/polymer-ae/raw/'

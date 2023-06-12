@@ -29,11 +29,15 @@ def thresholding(denoisedDataArr):
 def readAndProcessDataForThresolding(directoryPath):
     for root, dirs, files in os.walk(directoryPath):
         for denoisedDirName in dirs:
+            print('Thresholding files in ' +denoisedDirName+ ' directory')
             txtFiles = glob.glob(root+denoisedDirName+'/*.txt')
             for file in txtFiles:
                 denoisedDataDf = np.loadtxt(file)
                 threshold, thresholdedDataArr = thresholding(denoisedDataDf)
                 fileName =  file.replace(root+denoisedDirName+'/','')
+                
+                print('Thresholding ' + fileName + ' file data')
+                
                 aeExpDir = Path(root).parent
 
                 # check if denoised directory exist or not
@@ -86,15 +90,13 @@ def readAndProcessDataForThresolding(directoryPath):
 
 
                 #--- Save threshold values in new file in feature folder ----------
-                featureDir = str(aeExpDir/'feature')
+                featureDir = str(aeExpDir/'AEfeatures')
                 thresholdFeatureFile = featureDir + "/" + 'thresold.csv'
                 thresholdArrToSave = [fileName, threshold]                    
                 thresholValuWithFileName = np.array([thresholdArrToSave])
-                
-
 
                 # check if denoised directory exist or not
-                if ((aeExpDir/'feature').exists()):
+                if ((aeExpDir/'AEfeatures').exists()):
                     #check threshold file exist or not
                     if (Path(thresholdFeatureFile).exists()):
                         #--- Append values
@@ -109,11 +111,11 @@ def readAndProcessDataForThresolding(directoryPath):
                     mode = 0o777
   
                     # Path
-                    path = os.path.join(aeExpDir, 'feature')
+                    path = os.path.join(aeExpDir, 'AEfeatures')
                     
                     os.mkdir(path, mode)
-                    featureDir = str(aeExpDir/'feature')
-                    print('"Feature" directory is created')
+                    featureDir = str(aeExpDir/'AEfeatures')
+                    print('"AEfeatures" directory is created')
                     
                     
                     #check threshold file exist or not
@@ -125,6 +127,8 @@ def readAndProcessDataForThresolding(directoryPath):
                             csv_file.close()
                     else:
                         np.savetxt(thresholdFeatureFile,thresholValuWithFileName, delimiter=",", fmt='%s')
+    print('Thresholding completed')
+    return
 
 directoryPath = os.getcwd()+'/data/polymer-ae/denoised/'
 readAndProcessDataForThresolding(directoryPath)
