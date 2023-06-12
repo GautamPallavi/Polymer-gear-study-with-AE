@@ -12,22 +12,11 @@ from src.exception import CustomException
 #from src.components import data-thresholding
 #from logger import logging
 
-"""
-threshold=[]
-with open("data/polymer-ae/feature/thresold.csv", 'r') as file:
-          csvreader = csv.reader(file)
-          for row in csvreader:
-            threshold.append(row[1])
-###print(threshold)
-"""
-
-featuresName = []
-AEfeatures = []
-
 def featuresCalculation(thresholdedDataArr):
-# Calculate the statistical features of the AE signal
+    featuresName = []
+    AEfeatures = []
 
-
+    # Calculate the statistical features of the AE signal
     amplitude = np.max(thresholdedDataArr) - np.min(thresholdedDataArr)
     featuresName.append('amplitude')
     AEfeatures.append(amplitude)
@@ -72,32 +61,22 @@ def featuresCalculation(thresholdedDataArr):
 
 
     #return (amplitude, rise_time, duration, count, energy, freq, peak_amplitude, skewness, kurt)
-print(featuresName, AEfeatures)
+    #print(featuresName, AEfeatures)
+    return featuresName, AEfeatures
 
 def readAndProcessDataForFeatures(directoryPath):
     
-
-
-    
     for root, dirs, files in os.walk(directoryPath):
         for thresholdedDirName in dirs:
-            #print(dirs)
-            
-        
 
             txtFilesLocation = glob.glob(root+thresholdedDirName+'/*.txt')
             for fileLocation in txtFilesLocation:
                 ##print(xtFilesLocation)
 
-                
                 thresholdedDataDf = np.loadtxt(fileLocation)
                 ##print(thresholdedDataDf)
 
-
-
-                ##featuresName, AEfeatures = featuresCalculation(thresholdedDataDf)
-
-
+                featuresName, AEfeatures = featuresCalculation(thresholdedDataDf)
 
                 #Get the file to extract the load and speed label for feature
 
@@ -112,69 +91,48 @@ def readAndProcessDataForFeatures(directoryPath):
                 AEfeatures.insert(0, thresholdedDirName)
                 dataDir= Path(root).parent
 
-                ##print((dataDir/'feature').exists())
-                if ((dataDir/'feature').exists()):
-                    featureDir = str(dataDir/'AEfeatures')
-                    if (Path(featureDir + '/' + thresholdedDirName).exists()):
-                        if(Path(featureDir + '/' + thresholdedDirName + '/AEfeatures.csv').exists()):
-                            if (appendMode):
-                                # Convert the array to a space-separated string
-                                row_string = ' '.join(str(x) for x in AEfeatures)
-                                # Split the string on spaces to create a list of values
-                                values = row_string.split()
-                                # Write the values to the CSV file                            
-                                with open(Path(featureDir + '/' + thresholdedDirName + '/AEfeatures.csv'), 'a', newline='') as file:
-                                    writer = csv.writer(file)                                
-                                    writer.writerow(values)
-                            else:
-                                # replace the feature for same experiment, yet to complete the mode
-                                experimentType = AEfeaturesDf['Experiment_type'].values
-                                if (thresholdedDirName in experimentType):
-                                    
-                                    index = AEfeaturesDf.index[AEfeaturesDf['Experiment_type'] == thresholdedDirName].tolist()
-                                    
-                                    AEfeaturesDf.iloc[index[0]] = AEfeatures
-                                    featureFile = dataDir + '/polymer-ae/feature/AEfeatures.csv'
-                                    #featureDf.to_csv(dataDir/'feature/feature.csv', index = False)
-                        else:
-                            AEfeaturesDf = pd.DataFrame([AEfeatures], columns = featuresName)
-                            #Save the feature data frame
-                            featureFile = featureDir + "/" + thresholdedDirName + '/features.csv'
-                            AEfeaturesDf.to_csv(featureFile, index = False) 
+                featureDir = str(dataDir/'AEfeatures')
+                featuresFile = featureDir + "/features.csv"
 
+                featuresName = np.array(featuresName)
+                #AEfeatures = np.array(AEfeatures)
+                AEfeaturesNpArr = np.array([AEfeatures])
+            
+                #--- Check AEfeatures folder exist or not
+                if ((dataDir/'AEfeatures').exists()):
+
+                    #check threshold file exist or not
+                    if (Path(featuresFile).exists()):
+                        #--- Append values
+                        with open(featuresFile, 'a') as csv_file:
+                            dict_object = csv.writer(csv_file, delimiter=',')
+                            dict_object.writerow(AEfeatures)
+                            csv_file.close()
                     else:
-                        print('expt directory not exist')
-                        mode = 0o777
-                        path = os.path.join(featureDir, thresholdedDirName)
-                        os.mkdir(path, mode)        
-                        print(' exp directory is created')
-                    
-                        #Save the denoised data to a new CSV file
-                        AEfeaturesDf = pd.DataFrame([AEfeatures], columns = featuresName)
-                        #Save the feature data frame
-                        featureFile = featureDir + "/" + thresholdedDirName + '/AEfeatures.csv'
-                        AEfeaturesDf.to_csv(featureFile, index = False)
+                        np.savetxt(featuresFile,AEfeaturesNpArr, delimiter=",", fmt='%s')
 
                 else:
-                    # Create feature directory
                     mode = 0o777
+  
+                    # Path
                     path = os.path.join(dataDir, 'AEfeatures')
-                    os.mkdir(path, mode)
-                    print('"features" directory is created')
-                    featureDir = str(dataDir/'AEfeatures')
                     
-                    # Create experiment-type directory withing the feature directory
-                    path = os.path.join(featureDir, thresholdedDirName)
-                    os.mkdir(path, mode)        
-                    print(thresholdedDirName + ' Directory is created')
+                    os.mkdir(path, mode)
+                    featureDir = str(dataDir/'AEfeatures')
+                    print('"AEfeatures" directory is created')
+                    
+                    #check threshold file exist or not
+                    if (Path(featuresFile).exists()):
+                        #--- Append values
+                        with open(featuresFile, 'a') as csv_file:
+                            dict_object = csv.writer(csv_file, delimiter=',')
+                            dict_object.writerow(AEfeatures)
+                            csv_file.close()
+                    else:
+                        np.savetxt(featuresFile,AEfeaturesNpArr, delimiter=",", fmt='%s')
 
-                    AEfeaturesDf = pd.DataFrame([AEfeatures], columns = featuresName)
-                    #Save the feature data frame
-                    featureFile = featureDir + "/" + thresholdedDirName + '/features.csv'
-                    AEfeaturesDf.to_csv(featureFile, index = False)
-
-
+    print('Features calculated')
+    return
 
 directoryPath = os.getcwd()+'/data/polymer-ae/thresholded/'
 readAndProcessDataForFeatures(directoryPath)
-print("directoryPath")
