@@ -15,4 +15,10 @@
 4. Install the requirements
   --> pip install -r requirements.txt
 
-5. 
+5. create new conda environment
+  --> conda create --name myenv
+  -->conda create -n myenv python=3.4
+  -->conda info --envs
+  -->source activate my-env
+  -->source deactivate
+  -->conda remove --name my-env

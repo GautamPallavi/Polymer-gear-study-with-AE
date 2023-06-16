@@ -134,5 +134,5 @@ def readAndProcessDataForFeatures(directoryPath):
     print('Features calculated')
     return
 
-directoryPath = os.getcwd()+'/data/polymer-ae/thresholded/'
+directoryPath = os.getcwd()+'/data/AE/polymer_polymer/thresholded/'
 readAndProcessDataForFeatures(directoryPath)

@@ -6,4 +6,5 @@ scikit-learn
 scip
 logger
 matplotlib
+tensorflow==2.12.0rc0
 #-e .

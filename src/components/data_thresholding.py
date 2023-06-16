@@ -130,7 +130,7 @@ def readAndProcessDataForThresolding(directoryPath):
     print('Thresholding completed')
     return
 
-directoryPath = os.getcwd()+'/data/polymer-ae/denoised/'
+directoryPath = os.getcwd()+'/data/AE/polymer_polymer/denoised/'
 readAndProcessDataForThresolding(directoryPath)
     
 
