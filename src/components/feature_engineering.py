@@ -136,3 +136,6 @@ def readAndProcessDataForFeatures(directoryPath):
 
 directoryPath = os.getcwd()+'/data/AE/polymer_polymer/thresholded/'
 readAndProcessDataForFeatures(directoryPath)
+
+
+

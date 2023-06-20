@@ -26,7 +26,7 @@ import matplotlib_inline
 
 directoryPath = os.getcwd()+'/data/AE/polymer_polymer/AEfeatures/features.csv'
 df = pd.read_csv(directoryPath, header=None)
-df=df.sample(frac=1)
+df=df.sample(frac=1).reset_index(drop=True)
 
 #dictionary = {'polymer_polymer_healthy': 1, 'polymer_polymer_wear_1': 2, 'polymer_polymer_wear_2': 3}
 
@@ -92,27 +92,29 @@ x_test=RS.transform(x_test)
 """
 classifier=Sequential()
 
-classifier.add(Dense(12,input_shape=(12,),activation='relu'))
-classifier.add(Dense(6,input_shape=(12,),activation='relu'))
-classifier.add(Dense(5,input_shape=(6,),activation='relu'))
-classifier.add(Dense(4,input_shape=(5,),activation='relu'))
+classifier.add(Dense(12,input_shape=(x.shape[1],),activation='relu'))
+#classifier.add(Dense(12,input_shape=(12,),activation='relu'))
+#classifier.add(Dense(6,input_shape=(12,),activation='relu'))
+#classifier.add(Dense(5,input_shape=(6,),activation='relu'))
+#classifier.add(Dense(4,input_shape=(5,),activation='relu'))
 classifier.add(Dense(3,activation='softmax'))
 
-classifier.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'] )
+classifier.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'] )
 
 early_stopping=tf.keras.callbacks.EarlyStopping(
     monitor="val_loss",
     min_delta=0.01,
-    patience=20,
+    patience=10,
     verbose=1,
     mode="auto",
     baseline=None,
-    restore_best_weights=False,
+    restore_best_weights=True,
 )
 
 
 model_history=classifier.fit(x_train,y_train,validation_data=(x_test,y_test),
-                             batch_size=10,epochs=50,callbacks=early_stopping)
+                             batch_size=10,epochs=100000,callbacks=early_stopping,
+                             validation_split=0.2,verbose=1,shuffle=True)
 prediction=classifier.predict(x_test)
 
 from sklearn.metrics import confusion_matrix,classification_report,accuracy_score
@@ -148,3 +150,29 @@ print(confusion_matrix(y1_test,prediction))
 print(accuracy_score(y1_test,prediction))
 print(classification_report(y1_test,prediction))
 
+
+history_dict = model_history.history
+
+# learning curve
+# accuracy
+acc = history_dict['accuracy']
+val_acc = history_dict['val_accuracy']
+
+# loss
+loss = history_dict['loss']
+val_loss = history_dict['val_loss']
+
+# range of X (no. of epochs)
+epochs = range(1, len(acc) + 1)
+
+# plot
+# "r" is for "solid red line"
+plt.plot(epochs, acc, 'r', label='Training accuracy')
+# b is for "solid blue line"
+plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.show()
